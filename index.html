@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PRAHARI — प्रहरी</title>
+<style>
+:root{
+  --navy:#1F2328; --olive:#3A3F47; --amber:#D97706; --accent:#5B6472; --white:#F8FAFC;
+  --slate:#E2E8F0; --slate600:#475569; --slate800:#1E293B;
+  --ok:#15803D; --warn:#B45309; --risk:#B91C1C;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+body{height:100%; margin:0; background:var(--white); color:var(--slate800); font-family:'Segoe UI',system-ui,sans-serif; font-size:14px;}
+header{position:sticky; top:0; z-index:20; background:var(--navy); color:var(--white); padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; border-bottom:3px solid var(--accent);}
+.brand{font-weight:700; letter-spacing:.5px; font-size:16px;}
+.brand span{color:var(--accent);}
+.bellbtn{position:relative; background:transparent; border:1px solid #5b6472; color:#e5e7eb; width:32px; height:32px; border-radius:10px; cursor:pointer; font-size:14px; margin-left:auto;}
+.belldot{position:absolute; top:5px; right:6px; width:7px; height:7px; background:var(--risk); border-radius:50%; border:1.5px solid var(--navy);}
+.modeswitch{display:flex; gap:6px;}
+.modeswitch button{background:transparent; border:1px solid #5b6472; color:#cbd5e1; padding:6px 10px; font-size:12px; border-radius:3px; cursor:pointer;}
+.modeswitch button.active{background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600;}
+.langsel{background:#2a2d33; color:#cbd5e1; border:1px solid #5b6472; border-radius:3px; font-size:12px; padding:5px 6px;}
+main{max-width:1100px; margin:0 auto; padding:16px;}
+.panel{background:#fff; border:1px solid var(--slate); border-radius:14px; padding:16px 18px; margin-bottom:16px; box-shadow:0 1px 3px rgba(15,23,42,.05);}
+.panel h2{margin:0 0 12px; font-size:14px; color:var(--navy); border-bottom:1px solid var(--slate); padding-bottom:8px;}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.statrow{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;}
+@media(max-width:700px){.statrow{grid-template-columns:1fr 1fr;}}
+.statcard{background:#fff; border:1px solid var(--slate); border-radius:14px; padding:12px 14px; cursor:pointer; transition:transform .12s, box-shadow .12s;}
+.statcard:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(15,23,42,.08);}
+.statcard .sv{font-size:20px; font-weight:700; color:var(--navy);}
+.statcard .sl{font-size:11px; color:var(--slate600); margin-top:2px;}
+.triagebar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+.fbtns{display:flex; gap:6px;}
+.fbtn{background:#f1f5f9; border:1px solid var(--slate); color:var(--slate600); padding:6px 12px; border-radius:20px; font-size:11.5px; cursor:pointer; font-weight:600;}
+.fbtn.on{background:var(--navy); color:#fff; border-color:var(--navy);}
+.searchbox{flex:1; min-width:160px; padding:7px 12px; border:1px solid var(--slate); border-radius:20px; font-size:12.5px;}
+.spark{display:flex; align-items:flex-end; gap:5px; height:54px; margin:10px 0 4px;}
+.spark .sb{flex:1; background:var(--accent); border-radius:4px 4px 0 0; min-height:3px; position:relative;}
+.spark .sb:last-child{background:var(--amber);}
+.spark-lbl{display:flex; justify-content:space-between; font-size:10px; color:var(--slate600);}
+.reslist{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+@media(max-width:700px){.reslist{grid-template-columns:1fr 1fr;}}
+.rescard{border:1px solid var(--slate); border-radius:12px; padding:10px 11px; cursor:pointer; transition:transform .12s, box-shadow .12s;}
+.rescard:hover{transform:translateY(-2px); box-shadow:0 6px 14px rgba(15,23,42,.08);}
+.rescard .ic{font-size:18px;}
+.rescard .rt{font-size:12.5px; font-weight:600; color:var(--navy); margin:4px 0 2px;}
+.rescard .rb{font-size:11px; color:var(--slate600); line-height:1.4;}
+.psiwrap{display:flex; align-items:center; gap:18px;}
+.psigauge{width:92px; height:92px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+.psigauge .inner{width:70px; height:70px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.psigauge .inner b{font-size:20px; color:var(--navy); line-height:1;}
+.psigauge .inner span{font-size:9px; color:var(--slate600);}
+.tiplist{font-size:12px; color:var(--slate600); margin:0; padding-left:0; list-style:none;}
+.tiplist li{margin-bottom:5px; padding-left:16px; position:relative;}
+.tiplist li::before{content:"〜"; position:absolute; left:0; color:var(--accent);}
+.moodrow{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:12px;}
+.moodbtn{border:1px solid var(--slate); border-radius:10px; padding:8px 4px; text-align:center; cursor:pointer; font-size:10.5px; color:var(--slate600); background:#fff;}
+.moodbtn.on{border-color:var(--accent); background:#eef0f2; color:var(--navy); font-weight:600;}
+.moodbtn .mv{display:block; font-size:15px; font-weight:700; margin-bottom:2px;}
+@media(max-width:700px){.grid2{grid-template-columns:1fr;}}
+.chip{display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600;}
+.chip.ok{background:#dcfce7; color:var(--ok);}
+.chip.warn{background:#fef3c7; color:var(--warn);}
+.chip.risk{background:#fee2e2; color:var(--risk);}
+table{width:100%; border-collapse:collapse; font-size:13px;}
+th,td{text-align:left; padding:9px 8px; border-bottom:1px solid var(--slate);}
+th{color:var(--slate600); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.3px;}
+tr.rowbtn{cursor:pointer;}
+tr.rowbtn:hover{background:#f8fafc;}
+.mono{font-family:'Consolas',monospace; font-size:12px;}
+button.act{background:var(--navy); color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:12px; cursor:pointer; margin:3px 4px 3px 0; transition:transform .1s;}
+button.act:active{transform:scale(.97);}
+button.act:hover{background:#33373d;}
+button.act.amber{background:var(--accent); color:#fff; font-weight:600;}
+button.act.olive{background:var(--olive); color:#fff;}
+.slider-row{margin:10px 0;}
+.slider-row label{display:block; font-size:12px; margin-bottom:4px;}
+input[type=range]{width:100%;}
+.redbtn{background:var(--risk); color:#fff; border:none; padding:14px; border-radius:12px; width:100%; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:.5px;}
+.notice{background:#fffbeb; border:1px solid #fde68a; padding:9px 12px; font-size:12px; border-radius:10px; margin-top:8px; color:#78350f;}
+.overlay{position:fixed; inset:0; background:rgba(11,25,44,.65); display:none; align-items:center; justify-content:center; z-index:50; padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:#fff; border-radius:16px; padding:22px; max-width:460px; width:100%; max-height:85vh; overflow-y:auto;}
+.modal h3{margin-top:0; color:var(--navy);}
+.captcha{background:var(--slate); font-family:monospace; letter-spacing:4px; font-size:20px; padding:8px 14px; display:inline-block; border-radius:8px; user-select:none;}
+.field{margin:10px 0;}
+.field label{display:block; font-size:12px; margin-bottom:3px; color:var(--slate600);}
+.field input,.field select{width:100%; padding:8px 9px; border:1px solid var(--slate); border-radius:8px; font-size:13px;}
+.bar-wrap{background:var(--slate); border-radius:20px; height:8px; overflow:hidden;}
+.bar{height:100%; border-radius:3px;}
+.privbanner{display:flex; gap:14px; flex-wrap:wrap; font-size:11px; background:#2a2d33; color:#c9cdd3; padding:6px 16px;}
+.fab{position:fixed; bottom:16px; right:16px; background:var(--olive); color:#fff; border:none; border-radius:24px; padding:10px 16px; font-size:12px; font-weight:600; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.25); z-index:30; transition:transform .12s;}
+.fab:active{transform:scale(.96);}
+.breath{width:90px; height:90px; border-radius:50%; background:radial-gradient(circle,#dbeafe,#93c5fd); margin:14px auto; transition:transform 4s ease-in-out;}
+.drawer{border-top:2px solid var(--accent); margin-top:10px; padding-top:10px; font-size:12.5px;}
+.driver{display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px dashed var(--slate);}
+.driver .pos{color:var(--risk); font-weight:600;}
+.driver .neg{color:var(--ok); font-weight:600;}
+.heat{padding:14px; border-radius:12px; color:#fff; text-align:center; cursor:pointer; transition:transform .12s;}
+.heat:hover{transform:translateY(-2px);}
+.small{font-size:11px; color:var(--slate600);}
+
+/* Classic login landing */
+#loginScreen{position:fixed; inset:0; z-index:100; padding:16px; display:flex; align-items:center; justify-content:center;
+  background-color:var(--navy);
+  background-image:
+    radial-gradient(circle at 50% 25%, rgba(100,110,122,0.18), transparent 55%),
+    radial-gradient(circle at 10% 90%, rgba(30,62,43,0.35), transparent 45%);
+}
+.login-box{background:#FAFBFC; border:1px solid #dbe3ec; border-radius:20px; width:100%; max-width:380px; padding:0; position:relative; box-shadow:0 16px 40px rgba(11,25,44,.28); overflow:hidden;}
+.login-crest{position:relative; color:#F8FAFC; text-align:center; padding:24px 10px 20px; border-bottom:3px solid var(--accent); overflow:hidden; background:linear-gradient(135deg, #2c3036 0%, var(--navy) 100%);}
+.login-crest .em{font-size:30px; filter:drop-shadow(0 1px 3px rgba(0,0,0,.4));}
+.login-crest .t1{font-family:system-ui,-apple-system,'Segoe UI',sans-serif; font-weight:700; font-size:19px; letter-spacing:.5px; margin-top:6px;}
+.login-crest .t2{font-size:11px; color:#cbd5e1; margin-top:3px;}
+.login-crest .t3{display:inline-block; margin-top:9px; font-size:9.5px; color:var(--navy); background:var(--accent); padding:2px 9px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; border-radius:2px;}
+.login-body{padding:22px 22px 18px; font-family:system-ui,-apple-system,'Segoe UI',sans-serif; position:relative;}
+.login-body .field{margin:0 0 14px;}
+.login-body label{display:block; font-size:12px; color:var(--slate800); margin-bottom:4px; font-weight:600;}
+.login-body input,.login-body select{width:100%; padding:9px 10px; border:1px solid #cbd5e1; background:#fff; font-family:inherit; font-size:14px; border-radius:9px;}
+.login-body input:focus{outline:2px solid var(--accent); border-color:var(--accent);}
+.login-submit{width:100%; background:var(--accent); color:#fff; border:none; padding:12px; font-family:inherit; font-weight:600; font-size:14px; letter-spacing:.3px; cursor:pointer; border-radius:10px;}
+.login-submit:hover{background:#454d59;}
+.login-err{color:var(--risk); font-size:12px; min-height:16px; margin-top:8px;}
+/* Site footer */
+footer{background:var(--navy); color:#cbd5e1; margin-top:24px; border-radius:14px 14px 0 0; overflow:hidden;}
+.foot-top{max-width:1100px; margin:0 auto; padding:26px 20px 18px; display:grid; grid-template-columns:1.3fr 1fr 1fr 1.2fr; gap:22px;}
+@media(max-width:800px){.foot-top{grid-template-columns:1fr 1fr;}}
+.foot-col h4{color:#fff; font-size:12px; letter-spacing:.5px; margin:0 0 10px; text-transform:uppercase;}
+.foot-col p,.foot-col a{font-size:12px; color:#94a3b8; line-height:1.7; text-decoration:none; display:block; cursor:pointer;}
+.foot-col a:hover{color:var(--accent);}
+.foot-badges{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+.foot-badges span{font-size:9.5px; border:1px solid #33475f; padding:3px 8px; border-radius:20px; color:#cbd5e1;}
+.privlayers .pl{display:flex; gap:8px; align-items:flex-start; font-size:11px; color:#94a3b8; margin-bottom:8px;}
+.privlayers .pl b{color:#e5e7eb;}
+.foot-bottom{border-top:1px solid #3a3f47; padding:14px 20px; max-width:1100px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:11px; color:#9aa1ab;}
+.foot-bottom a{color:#9aa1ab; text-decoration:none; margin-left:14px; cursor:pointer;}
+.foot-bottom a:hover{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-crest">
+      <div class="em">🛡️</div>
+      <div class="t1">PRAHARI — प्रहरी</div>
+      <div class="t2">Personnel Stress, Resilience &amp; Welfare Support System</div>
+      <div class="t3">⚑ Government Use · Restricted Access</div>
+    </div>
+    <div class="login-body">
+      <div class="field">
+        <label>Service / Regimental ID</label>
+        <input id="loginId" placeholder="e.g. BSF-2291-HAV" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Login Token</label>
+        <input id="loginTok" type="password" placeholder="Enter your login token" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Force</label>
+        <select id="loginForce">
+          <option>BSF</option><option>CRPF</option><option>ITBP</option><option>CISF</option><option>SSB</option><option>Assam Rifles</option>
+        </select>
+      </div>
+      <button class="login-submit" onclick="doLogin()">LOG IN TO PRAHARI</button>
+      <div class="login-err" id="loginErr"></div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="brand">PRAHARI <span>प्रहरी</span></div>
+  <select class="langsel" id="langsel" onchange="setLang(this.value)">
+    <option value="en">English</option>
+    <option value="hi">हिन्दी</option>
+    <option value="pa">ਪੰਜਾਬੀ</option>
+    <option value="bn">বাংলা</option>
+  </select>
+  <button class="bellbtn" onclick="alert('Dummy Notifications:\n\n• 2 Tier-2 flags awaiting review\n• Roster rebalance draft pending sign-off\n• Scenario 2 data refreshed 3h ago')" title="Notifications">🔔<span class="belldot"></span></button>
+  <div class="modeswitch">
+    <button id="btnA" onclick="requestMode('A')">Jawan</button>
+    <button id="btnB" onclick="requestMode('B')">Welfare Officer</button>
+    <button id="btnC" onclick="requestMode('C')">Commander</button>
+  </div>
+</header>
+<div class="privbanner">
+  <span>🔒 Differential Privacy: Active (ε = 0.5)</span>
+  <span>🔑 ZK-Tokenization: Operational</span>
+  <span>🛰 Zero Cloud Egress — Air-Gapped Sovereign Node</span>
+  <span style="margin-left:auto; cursor:pointer; text-decoration:underline;" onclick="showLegal()">Compliance & Legal</span>
+</div>
+
+<main id="app"></main>
+
+<footer>
+  <div class="foot-top">
+    <div class="foot-col">
+      <h4>PRAHARI</h4>
+      <p>AI-Assisted Personnel Stress, Resilience &amp; Welfare Support System, built for CAPFs and Armed Forces units. Supports force readiness through non-punitive, privacy-first welfare monitoring.</p>
+      <div class="foot-badges">
+        <span>DPDPA 2023</span><span>MHCA 2017 §21</span><span>CAPF Welfare Regs</span>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Quick Links</h4>
+      <a onclick="showLegal()">Compliance &amp; Legal</a>
+      <a onclick="showScenario()">Demo Scenario Controller</a>
+      <a onclick="alert('Dummy: User Manual (PDF) would open here.')">User Manual</a>
+      <a onclick="alert('Dummy: Training Videos would open here.')">Training Videos</a>
+      <a onclick="alert('Dummy: Grievance Redressal Portal would open here.')">Grievance Redressal</a>
+    </div>
+    <div class="foot-col">
+      <h4>Helpline</h4>
+      <p>Tele-MANAS: 14416 / 1800-891-4416</p>
+      <p>Unit IT Support: ext. 2207</p>
+      <p>Welfare Cell Email: welfare@prahari.gov.in (dummy)</p>
+    </div>
+    <div class="foot-col">
+      <h4>Active Privacy Safeguards</h4>
+      <div class="privlayers">
+        <div class="pl"><span>🔒</span><span><b>Differential Privacy (ε = 0.5)</b> — noise added to aggregates so no individual is re-identifiable.</span></div>
+        <div class="pl"><span>🔑</span><span><b>ZK-Tokenization</b> — identity replaced with a zero-knowledge token before processing.</span></div>
+        <div class="pl"><span>🛰</span><span><b>Air-Gapped Node</b> — zero cloud egress; nothing leaves unit infrastructure.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© <span id="footYear"></span> PRAHARI · Ministry of Home Affairs (Prototype/Demo) · All rights reserved.</span>
+    <span>
+      <a onclick="alert('Dummy: Terms of Use would open here.')">Terms of Use</a>
+      <a onclick="alert('Dummy: Privacy Policy would open here.')">Privacy Policy</a>
+      <a onclick="alert('Dummy: Accessibility Statement would open here.')">Accessibility</a>
+      <span class="mono" style="margin-left:14px; opacity:.7;">Build v0.9.3-demo</span>
+    </span>
+  </div>
+</footer>
+
+<button class="fab" onclick="showScenario()">⚙ Demo Scenario Controller</button>
+
+<!-- Auth modal -->
+<div class="overlay" id="authOverlay">
+  <div class="modal">
+    <h3>Military-Grade Access Verification</h3>
+    <p class="small">Elevating clearance to <b id="authTarget"></b>. This access attempt is logged.</p>
+    <div class="field"><label>Military ID</label><input id="milId" placeholder="e.g. BSF-2291-HAV"></div>
+    <div class="field"><label>Access Token</label><input id="milTok" type="password" placeholder="6-digit token"></div>
+    <div class="field">
+      <label>Purpose of Access</label>
+      <select id="purpose">
+        <option>Routine Welfare Review</option>
+        <option>Statutory Inspection</option>
+        <option>Clinical Triage</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Security CAPTCHA</label>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="captcha" id="captchaText"></span>
+        <button class="act" type="button" onclick="genCaptcha()">↻</button>
+      </div>
+      <input id="captchaInput" placeholder="Enter code above" style="margin-top:6px;">
+    </div>
+    <div id="authErr" style="color:var(--risk); font-size:12px; min-height:16px;"></div>
+    <button class="act amber" onclick="verifyAuth()">Verify & Elevate Access</button>
+    <button class="act" style="background:#94a3b8;" onclick="closeAuth()">Cancel</button>
+  </div>
+</div>
+
+<!-- Legal modal -->
+<div class="overlay" id="legalOverlay">
+  <div class="modal">
+    <h3>Compliance & Statutory Safeguards</h3>
+    <p><span class="chip ok">DPDPA 2023</span> <span class="chip ok">MHCA 2017 §21</span> <span class="chip ok">CAPF Welfare Regs</span></p>
+    <p class="small"><b>Non-Punitive Clause:</b> Stress markers, self-check scores and biometric indicators captured by this system cannot be introduced as evidence in Court Martial, Summary Security Force Court proceedings, or as an adverse remark in Annual Confidential Reports (ACRs). Data collection is for welfare and force-readiness purposes only.</p>
+    <p class="small"><b>Right to Confidentiality (MHCA 2017, Section 21):</b> Individual mental health information is disclosed only with consent, or where risk to life is imminent, per statute.</p>
+    <button class="act" onclick="closeLegal()">Close</button>
+  </div>
+</div>
+
+<!-- Scenario modal -->
+<div class="overlay" id="scenOverlay">
+  <div class="modal">
+    <h3>Demo Scenario Controller</h3>
+    <p class="small">Load a simulated dataset to illustrate system behavior.</p>
+    <button class="act" style="display:block; width:100%; text-align:left;" onclick="loadScenario(1)">1. High-Altitude Border Outpost — acute sleep deprivation & cold stress</button>
+    <button class="act" style="display:block; width:100%; text-align:left;" onclick="loadScenario(2)">2. Election/Riot Duty Surge — 74h/week, denied leave</button>
+    <button class="act" style="display:block; width:100%; text-align:left;" onclick="loadScenario(3)">3. Normal Post-Leave Decompression — recovery curve</button>
+    <button class="act" style="background:#94a3b8;" onclick="closeScenario()">Close</button>
+  </div>
+</div>
+
+<!-- Resource detail modal -->
+<div class="overlay" id="resOverlay">
+  <div class="modal" id="resModalBody"></div>
+</div>
+
+<script>
+/* ---------------- i18n (light) ---------------- */
+const T = {
+  en:{title:"Force Resilience & Welfare Support"},
+  hi:{title:"कल्याण निगरानी प्रणाली — बल लचीलापन"},
+  pa:{title:"ਫੋਰਸ ਭਲਾਈ ਸਹਾਇਤਾ"},
+  bn:{title:"বাহিনী কল্যাণ সহায়তা"}
+};
+let lang='en', scenario=1, mode='A', pendingMode=null;
+function setLang(v){lang=v; render();}
+
+/* ---------------- data (mock, scenario-driven) ---------------- */
+function scenarioData(s){
+  const loc=['Siachen Base Camp','Kargil Sector','Leh Forward Post','Nubra Valley Outpost'];
+  if(s===1) return {companies:[{n:'Alpha',loc:loc[0],f:71,cause:'High-altitude cold exposure & broken sleep cycles'},{n:'Bravo',loc:loc[1],f:54,cause:'Acclimatization lag, reduced ration variety'},{n:'Charlie',loc:loc[2],f:38,cause:'Stable — recent rotation'},{n:'Delta',loc:loc[3],f:46,cause:'Equipment cold-weather gaps'}], trend:[40,48,55,63,71]};
+  if(s===2) return {companies:[{n:'Alpha',loc:loc[0],f:34,cause:'Rear-area posting, normal cadence'},{n:'Bravo',loc:loc[1],f:58,cause:'Extended riot-duty shifts'},{n:'Charlie',loc:loc[2],f:79,cause:'Border flood deployment & 3-week leave embargo'},{n:'Delta',loc:loc[3],f:62,cause:'74h/week continuous election duty'}], trend:[45,52,61,70,79]};
+  return {companies:[{n:'Alpha',loc:loc[0],f:28,cause:'Post-leave recovery, on track'},{n:'Bravo',loc:loc[1],f:33,cause:'Routine garrison duty'},{n:'Charlie',loc:loc[2],f:31,cause:'Recovering from prior deployment'},{n:'Delta',loc:loc[3],f:26,cause:'Stable, low fatigue'}], trend:[52,44,38,31,26]};
+}
+/* ---------------- welfare resource library (merged from uploaded prototype) ---------------- */
+const RESOURCES = [
+  {id:'leave', ic:'📅', t:'Leave & Rest Entitlements', b:'Annual, casual & emergency leave — how it accrues and how to apply.',
+   body:['Annual leave accrues at 2.5 days per completed month and carries forward up to 60 days before lapsing.','Emergency leave for a family medical situation can be sanctioned within 24 hours by the unit adjutant — no PSI score or check-in history required, and it does not draw against annual balance.','Casual leave (up to 8 days/quarter) only needs sign-off from your immediate reporting officer.','Apply via the unit leave portal or a written request through your JCO/NCO — keep the acknowledgment.']},
+  {id:'family', ic:'📞', t:'Family Communication Windows', b:'Scheduled call slots, video links, and mail routing to family.',
+   body:['Daily video-call windows at the welfare center — book through your JCO up to 48 hours in advance.','Satellite phone access is available without booking for confirmed family emergencies.','Postal mail via Field Post Office typically reaches home in 5–7 days; registered mail is tracked end to end.','A monthly family-day video session for dependents can be arranged through the welfare officer.']},
+  {id:'financial', ic:'💰', t:'Financial & Pay Support', b:'Advance pay, allotments to family, and low-interest welfare loans.',
+   body:['Advance pay up to one month\'s salary for documented emergencies, repayable over 6 months.','A standing allotment can transfer a fixed portion of pay to a family member\'s account each cycle.','The Force Welfare Fund offers low-interest loans for education, medical, or housing needs.','Pay discrepancies can be raised confidentially with the unit accounts JCO — not visible to your reporting chain.']},
+  {id:'grievance', ic:'📋', t:'Grievance Redressal', b:'Confidential channels to raise concerns about treatment or conduct.',
+   body:['Grievances can be filed anonymously via the sealed complaint box or welfare officer\'s confidential intake — neither is logged against your service record.','For issues involving your immediate chain, you may bypass it and report directly to the next level or welfare officer.','Serious conduct complaints follow a protected-disclosure process with a guaranteed 7-day response.','Retaliation for a good-faith grievance is itself a reportable offense.']},
+  {id:'medical', ic:'⚕️', t:'Medical & Physiotherapy Access', b:'Sick call timings, physiotherapy, and referral to base hospital.',
+   body:['Sick call is held every morning before duty formation — no appointment or section commander approval needed.','Physiotherapy for duty-related strain is available walk-in at the base medical unit twice a week.','Referral to command hospital for specialist care is arranged directly by the medical officer.','Mental health consultations at sick call are kept in a separate confidential file, not your general medical/fitness record.']},
+  {id:'peer', ic:'🤝', t:'Peer Support Network', b:'Trained buddy-system volunteers you can talk to informally, off the record.',
+   body:['Every subunit has 2–3 peer supporters trained to listen and point you to resources — not to report back to command.','Conversations with a peer supporter are informal and not documented anywhere.','Peer supporters rotate every 6 months so someone approachable is always available.','You can request a peer supporter from outside your own subunit.']},
+  {id:'sleep', ic:'🌙', t:'Sleep Hygiene Protocol', b:'Recommended routine for recovering sleep debt after night duty.',
+   body:['After a night-shift run, take one consolidated sleep block in a darkened space rather than splitting rest.','Avoid caffeine within 6 hours of your intended sleep window.','A fixed wake time, even on off days, resets circadian rhythm faster than a fixed bedtime.','If sleep debt persists beyond 3–4 days, flag it at sick call.']},
+  {id:'breathing', ic:'🫁', t:'Tactical Breathing & Grounding', b:'Step-by-step techniques for before/after high-stress duty.',
+   body:['4-7-8 breathing: inhale 4s, hold 7s, exhale 8s — three rounds lowers heart rate measurably.','Box breathing (4-4-4-4) is easier to keep rhythm under load during active duty.','5-4-3-2-1 grounding — 5 seen, 4 heard, 3 felt, 2 smelled, 1 tasted — helps reorient after a high-stress incident.','None of these replace sleep or professional support — they bridge the next hour.']},
+  {id:'escalation', ic:'📈', t:'Chain-of-Command Escalation', b:'When and how to escalate a welfare concern beyond your section.',
+   body:['If unaddressed within a reasonable time, you\'re entitled to raise it one level up without needing sign-off.','Welfare escalations (workload, rest, harassment) route through the welfare officer, separate from duty evaluations.','Anything urgent or safety-related can be escalated immediately and verbally, with written follow-up after.','Escalating a genuine concern cannot be cited in performance reviews.']},
+  {id:'emergency', ic:'🚨', t:'24/7 Emergency Line', b:'Immediate connect for crisis situations — always available, confidential.',
+   body:['Staffed around the clock, reachable from any base extension or personal phone without going through the chain of command first.','Calls are confidential by default; shared with command only if there is immediate safety risk.','No threshold of severity is needed to call — anything that feels urgent right now qualifies.','If unreachable directly, the base medical officer or duty officer can connect you immediately.']},
+];
+let selMood=null;
+function openResource(id){
+  const r=RESOURCES.find(x=>x.id===id);
+  document.getElementById('resModalBody').innerHTML = `
+    <h3>${r.ic} ${r.t}</h3>
+    <p class="small" style="margin-bottom:12px;">${r.b}</p>
+    ${r.body.map(line=>`<p style="font-size:12.5px; margin:0 0 8px; color:var(--slate800); line-height:1.5;">• ${line}</p>`).join('')}
+    <button class="act" style="margin-top:6px;" onclick="closeResource()">Close</button>`;
+  document.getElementById('resOverlay').classList.add('show');
+}
+function closeResource(){document.getElementById('resOverlay').classList.remove('show');}
+function pickMood(v){ selMood=v; render(); }
+
+const triage = [
+  {tok:'PSX-7741', rank:'Havildar', tier:3, psi:82, drivers:[['Consecutive 14-day Night Shifts',38,1],['Denied Leave (Domestic Emergency)',28,1],['HRV Autonomic Drop <24ms',18,1],['Peer Support Regularity',10,0]]},
+  {tok:'PSX-2290', rank:'Constable', tier:2, psi:64, drivers:[['Continuous Riot-Duty 21 days',30,1],['Sleep Duration <5h avg',22,1],['Family Contact Frequency',12,0]]},
+  {tok:'PSX-5518', rank:'Head Constable', tier:2, psi:58, drivers:[['Border Flood Deployment',26,1],['Leave Embargo 3 weeks',24,1],['Unit Cohesion Score',9,0]]},
+];
+
+/* ---------------- auth / mode switching ---------------- */
+function requestMode(m){
+  if(m==='A'){ mode='A'; render(); return; }
+  pendingMode=m;
+  document.getElementById('authTarget').textContent = m==='B' ? 'Welfare & Medical Officer' : 'Commanding Officer / Adjutant';
+  genCaptcha();
+  document.getElementById('authErr').textContent='';
+  document.getElementById('authOverlay').classList.add('show');
+}
+function genCaptcha(){
+  const chars='ACDEFHKLMNPQRSTUVWXY3479';
+  let s=''; for(let i=0;i<6;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('captchaText').textContent=s;
+  document.getElementById('captchaText').dataset.val=s;
+}
+function verifyAuth(){
+  const id=document.getElementById('milId').value.trim();
+  const tok=document.getElementById('milTok').value.trim();
+  const cap=document.getElementById('captchaInput').value.trim().toUpperCase();
+  const want=document.getElementById('captchaText').dataset.val;
+  const err=document.getElementById('authErr');
+  if(!id||!tok){ err.textContent='Military ID and Access Token are required.'; return; }
+  if(cap!==want){ err.textContent='CAPTCHA does not match. Try again.'; genCaptcha(); return; }
+  mode=pendingMode; closeAuth(); render();
+}
+function closeAuth(){document.getElementById('authOverlay').classList.remove('show');}
+function showLegal(){document.getElementById('legalOverlay').classList.add('show');}
+function closeLegal(){document.getElementById('legalOverlay').classList.remove('show');}
+function showScenario(){document.getElementById('scenOverlay').classList.add('show');}
+function closeScenario(){document.getElementById('scenOverlay').classList.remove('show');}
+function loadScenario(s){scenario=s; closeScenario(); render();}
+
+/* ---------------- render ---------------- */
+function render(){
+  ['A','B','C'].forEach(m=>document.getElementById('btn'+m).classList.toggle('active', mode===m));
+  const app=document.getElementById('app');
+  app.innerHTML = mode==='A' ? renderA() : mode==='B' ? renderB() : renderC();
+  if(mode==='B') renderRows();
+}
+
+function renderA(){
+  return `
+  <div class="statrow">
+    <div class="statcard" onclick="alert('Dummy detail: 9 night patrols across the last 30 days, avg 8.1h each.')"><div class="sv">9</div><div class="sl">Night Patrols (30d)</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: 2 leave requests under Adjutant review, ETA 3 days.')"><div class="sv">2</div><div class="sl">Leave Requests Pending</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: Local self-check history — 4 checks this month, all mild.')"><div class="sv">4</div><div class="sl">Self-Checks This Month</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: Resilience toolkit used 6 times this week.')"><div class="sv">6</div><div class="sl">Toolkit Sessions (7d)</div></div>
+  </div>
+  <div class="panel">
+    <h2>My Duty &amp; Rest Cadence — Const. R. Meena (self view)</h2>
+    <p class="small">Rolling 30-day pattern: <b>9</b> night patrols, <b>3</b> pending leave requests (1 approved, 2 under review).</p>
+    <div class="bar-wrap"><div class="bar" style="width:64%; background:var(--accent);"></div></div>
+    <p class="small">Duty load this month: 64% of safe threshold.</p>
+    <button class="act" onclick="alert('Dummy: Leave request form submitted to Adjutant for approval.')">Request Leave</button>
+    <button class="act" style="background:#64748b;" onclick="alert('Dummy: Duty roster (next 14 days) would open here.')">View Full Roster</button>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Confidential Self-Check (PHQ-4 / GAD-2)</h2>
+      <p class="small" style="margin-bottom:8px;">How are you feeling today?</p>
+      <div class="moodrow">
+        <div class="moodbtn ${selMood===1?'on':''}" onclick="pickMood(1)"><span class="mv">1</span>Depleted</div>
+        <div class="moodbtn ${selMood===2?'on':''}" onclick="pickMood(2)"><span class="mv">2</span>Strained</div>
+        <div class="moodbtn ${selMood===3?'on':''}" onclick="pickMood(3)"><span class="mv">3</span>Steady</div>
+        <div class="moodbtn ${selMood===4?'on':''}" onclick="pickMood(4)"><span class="mv">4</span>Solid</div>
+        <div class="moodbtn ${selMood===5?'on':''}" onclick="pickMood(5)"><span class="mv">5</span>Sharp</div>
+      </div>
+      <div class="slider-row"><label>Feeling low or hopeless (0–3)</label><input type="range" min="0" max="3" value="1" oninput="updateSelf()" id="q1"></div>
+      <div class="slider-row"><label>Little interest or pleasure in duties (0–3)</label><input type="range" min="0" max="3" value="1" oninput="updateSelf()" id="q2"></div>
+      <div class="slider-row"><label>Feeling nervous or on edge (0–3)</label><input type="range" min="0" max="3" value="1" oninput="updateSelf()" id="q3"></div>
+      <div class="slider-row"><label>Unable to stop worrying (0–3)</label><input type="range" min="0" max="3" value="1" oninput="updateSelf()" id="q4"></div>
+      <div id="selfResult" class="notice">Local score: mild. Not submitted to unit records.</div>
+    </div>
+    <div class="panel">
+      <h2>Personal Stress Index</h2>
+      <div class="psiwrap">
+        <div class="psigauge" style="background:conic-gradient(var(--warn) 0% 58%, var(--slate) 58% 100%);"><div class="inner"><b>58</b><span>ELEVATED</span></div></div>
+        <ul class="tiplist">
+          <li>4-7-8 tactical breathing before rack time</li>
+          <li>Request a welfare check-in with base counselor</li>
+          <li>Prioritize 7+ hrs sleep tonight</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Wearable Sync (Opt-In)</h2>
+      <label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="wear" checked onchange="render()"> Enable biometric telemetry</label>
+      <p class="notice">Biometrics are locally encrypted and purely voluntary. Nothing leaves the device without your action.</p>
+      <table><tr><td>HRV (RMSSD)</td><td class="mono">41 ms</td></tr><tr><td>Sleep last night</td><td class="mono">5h 40m</td></tr><tr><td>Resting HR</td><td class="mono">68 bpm</td></tr></table>
+    </div>
+    <div class="panel">
+      <h2>Sampark — Confidential Connect</h2>
+      <button class="redbtn" onclick="alert('Connecting confidentially to Tele-MANAS / Unit Psychiatrist...')">📞 SAMPARK — Talk to Someone Now</button>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="act" style="flex:1; background:#64748b;" onclick="alert('Dummy: Confidential chat with base counselor opening...')">💬 Chat</button>
+        <button class="act" style="flex:1;" onclick="alert('Dummy: Calling base counselor now...')">📱 Call Now</button>
+      </div>
+      <p class="notice">Tele-MANAS: 14416 / 1800-891-4416. This call does not notify your Unit Adjutant or appear in service records.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Welfare &amp; Resilience Resource Library</h2>
+    <div class="reslist">
+      ${RESOURCES.map(r=>`<div class="rescard" onclick="openResource('${r.id}')"><div class="ic">${r.ic}</div><div class="rt">${r.t}</div><div class="rb">${r.b}</div></div>`).join('')}
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Local Resilience Toolkit</h2>
+    <p class="small">Tactical 4-4-4-4 combat breathing</p>
+      <div class="breath" id="breathBall"></div>
+      <button class="act olive" onclick="startBreath()">Start Breathing Guide</button>
+  </div>`;
+}
+
+function updateSelf(){
+  const v=['q1','q2','q3','q4'].reduce((s,id)=>s+ +document.getElementById(id).value,0);
+  const el=document.getElementById('selfResult');
+  if(v<=4) el.textContent='Local score: mild ('+v+'/12). Not submitted to unit records.';
+  else if(v<=8){ el.textContent='Local score: moderate ('+v+'/12). Consider using Sampark below.'; }
+  else { el.textContent='Local score: elevated ('+v+'/12). We strongly encourage using Sampark below — this stays confidential.'; }
+}
+function startBreath(){
+  const b=document.getElementById('breathBall');
+  let big=true;
+  b.style.transform='scale(1.5)';
+  clearInterval(window._bi);
+  window._bi=setInterval(()=>{ big=!big; b.style.transform= big?'scale(1.5)':'scale(1)'; },4000);
+}
+
+let triageFilter='all', triageSearch='';
+function renderB(){
+  const t2=triage.filter(x=>x.tier===2).length, t3=triage.filter(x=>x.tier===3).length;
+  const statHtml = `
+  <div class="statrow">
+    <div class="statcard" onclick="alert('Dummy detail: ${t3} Tier-3 (high risk) personnel currently flagged.')"><div class="sv">${t3}</div><div class="sl">Tier-3 High Risk</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: ${t2} Tier-2 (moderate) personnel currently flagged.')"><div class="sv">${t2}</div><div class="sl">Tier-2 Moderate</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: 11 confidential sit-downs completed this month.')"><div class="sv">11</div><div class="sl">Sit-Downs This Month</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: Avg. resolution time is 4.2 days from flag to re-test.')"><div class="sv">4.2d</div><div class="sl">Avg Resolution Time</div></div>
+  </div>`;
+  return `
+  ${statHtml}
+  <div class="panel">
+    <h2>De-Anonymized Risk Triage Queue</h2>
+    <div class="triagebar">
+      <div class="fbtns">
+        <button class="fbtn ${triageFilter==='all'?'on':''}" onclick="triageFilter='all';render();">All (${triage.length})</button>
+        <button class="fbtn ${triageFilter==='3'?'on':''}" onclick="triageFilter='3';render();">Tier-3 (${t3})</button>
+        <button class="fbtn ${triageFilter==='2'?'on':''}" onclick="triageFilter='2';render();">Tier-2 (${t2})</button>
+      </div>
+      <input class="searchbox" placeholder="Search token or rank..." value="${triageSearch}" oninput="triageSearch=this.value;renderRows();">
+    </div>
+    <table><thead><tr><th>Token</th><th>Rank</th><th>Tier</th><th>PSI</th><th></th></tr></thead><tbody id="triageBody"></tbody></table>
+    <div id="drawer"></div>
+  </div>`;
+}
+function renderRows(){
+  const body=document.getElementById('triageBody');
+  if(!body) return;
+  const rows=triage.filter(t=>{
+    if(triageFilter!=='all' && String(t.tier)!==triageFilter) return false;
+    const q=triageSearch.toLowerCase();
+    if(q && !(t.tok.toLowerCase().includes(q)||t.rank.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  body.innerHTML = rows.length ? rows.map(t=>`
+    <tr class="rowbtn" onclick="openDrawer('${t.tok}')">
+      <td class="mono">${t.tok}</td>
+      <td>${t.rank}</td>
+      <td><span class="chip ${t.tier===3?'risk':'warn'}">Tier-${t.tier}</span></td>
+      <td>${t.psi}</td>
+      <td class="small">Click to view attribution →</td>
+    </tr>`).join('') : `<tr><td colspan="5" class="small" style="text-align:center; padding:16px;">No personnel match this filter.</td></tr>`;
+}
+function openDrawer(tok){
+  const t=triage.find(x=>x.tok===tok);
+  const drivers=t.drivers.map(([label,pct,pos])=>`<div class="driver"><span>${label}</span><span class="${pos?'pos':'neg'}">${pos?'+':'-'}${pct}%</span></div>`).join('');
+  document.getElementById('drawer').innerHTML = `
+    <div class="drawer">
+      <b>${tok}</b> — TreeSHAP Risk Attribution<br>
+      ${drivers}
+      <div style="margin-top:10px;">
+        <button class="act" onclick="alert('Confidential sit-down scheduled for ${tok}.')">Schedule Confidential Sit-Down</button>
+        <button class="act olive" onclick="alert('72h Tactical Recovery prescribed for ${tok}.')">Prescribe 72h Recovery</button>
+        <button class="act amber" onclick="alert('Emergency Welfare Leave authorized for ${tok}.')">Authorize Emergency Leave</button>
+        <button class="act" style="background:#64748b;" onclick="alert('${tok} scheduled for re-test in 7 days.')">Re-test in 7 Days</button>
+      </div>
+    </div>`;
+}
+
+function renderC(){
+  const d=scenarioData(scenario);
+  const cards=d.companies.map(c=>{
+    const color = c.f>=65?'var(--risk)':c.f>=45?'var(--amber)':'var(--ok)';
+    return `<div><div class="heat" style="background:${color};" onclick="alert('${c.n} Company — ${c.loc}\\nFatigue Index: ${c.f}%\\n${c.cause}')"><b>${c.n} Company</b><br><span style="font-size:10px; opacity:.85;">${c.loc}</span><br>Fatigue Index: ${c.f}%</div>
+      <p class="small" style="padding:6px 2px;">${c.cause}</p></div>`;
+  }).join('');
+  const worst=[...d.companies].sort((a,b)=>b.f-a.f)[0];
+  const best=[...d.companies].sort((a,b)=>a.f-b.f)[0];
+  const avgF=Math.round(d.companies.reduce((s,c)=>s+c.f,0)/d.companies.length);
+  return `
+  <div class="statrow">
+    <div class="statcard" onclick="alert('Dummy detail: Unit-wide average fatigue index across all companies.')"><div class="sv">${avgF}%</div><div class="sl">Avg Unit Fatigue</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: ${worst.n} Company flagged highest — ${worst.cause}')"><div class="sv">${worst.n}</div><div class="sl">Highest Fatigue Coy</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: 3 roster rebalance orders issued this quarter.')"><div class="sv">3</div><div class="sl">Rebalances This Qtr</div></div>
+    <div class="statcard" onclick="alert('Dummy detail: Overall readiness holding at 84% against establishment.')"><div class="sv">84%</div><div class="sl">Unit Readiness</div></div>
+  </div>
+  <div class="panel">
+    <h2>Company-wise Operational Fatigue Heatmap (Scenario ${scenario})</h2>
+    <div class="grid2" style="grid-template-columns:repeat(4,1fr);">${cards}</div>
+  </div>
+  <div class="panel">
+    <h2>5-Week Fatigue Trend (Unit Average)</h2>
+    <div class="spark">${d.trend.map(v=>`<div class="sb" style="height:${Math.max(6,v)}%;" title="${v}%"></div>`).join('')}</div>
+    <div class="spark-lbl"><span>Wk -4</span><span>Wk -3</span><span>Wk -2</span><span>Wk -1</span><span>Current</span></div>
+  </div>
+  <div class="panel">
+    <h2>Roster Balance Recommender</h2>
+    <p>Recommend rotating <b>${worst.n} Company</b> (${worst.f}% fatigue) to static depot / rear-area duties, and deploying <b>${best.n} Company</b> (${best.f}% fatigue) for perimeter watch over the next roster cycle.</p>
+    <button class="act amber" onclick="alert('Roster rebalance order drafted for Adjutant sign-off.')">Draft Rebalance Order</button>
+  </div>
+  <div class="panel">
+    <h2>Privacy Guardrail</h2>
+    <p class="small">Individual names, scores, and psychometric logs are not accessible at this clearance level. Only aggregated unit readiness is shown, per DPDPA 2023 and MHCA 2017 §21.</p>
+  </div>`;
+}
+
+function doLogin(){
+  const id=document.getElementById('loginId').value.trim();
+  const tok=document.getElementById('loginTok').value.trim();
+  const err=document.getElementById('loginErr');
+  if(!id||!tok){ err.textContent='Service ID and Login Token are both required.'; return; }
+  if(tok.length<4){ err.textContent='Login token must be at least 4 characters.'; return; }
+  document.getElementById('loginScreen').style.display='none';
+}
+document.getElementById('loginTok').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+document.getElementById('footYear').textContent = new Date().getFullYear();
+genCaptcha();
+render();
+</script>
+</body>
+</html>
